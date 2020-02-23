@@ -67,7 +67,7 @@ def mysql(namespace):
     k8s_resource("mysql", port_forwards=["3306"])
 
 create_namespace(K8S_NAMESPACE)
-#intake(K8S_NAMESPACE, live_update=True)
+#intake(K8S_NAMESPACE, live_update=False)
 #emitter(K8S_NAMESPACE)
 #mysql(K8S_NAMESPACE)
 #intake_db_workflows(K8S_NAMESPACE)
