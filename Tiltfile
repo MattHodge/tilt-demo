@@ -38,18 +38,6 @@ def intake(namespace, live_update=False):
             trigger_mode=TRIGGER_MODE_MANUAL
         )
 
-def intake_db_workflows(namespace):
-    k8s_yaml(helm("apps/intake-db-workflows/k8s", namespace=namespace))
-
-    docker_build(
-        "localhost:5000/intake-db-workflows",
-        "apps/intake-db-workflows",
-        dockerfile="apps/intake-db-workflows/Dockerfile",
-    )
-
-    k8s_resource("intake-db-drop", trigger_mode=TRIGGER_MODE_MANUAL)
-    k8s_resource("intake-db-migrate", trigger_mode=TRIGGER_MODE_MANUAL, resource_deps=['intake-db-drop'])
-
 def emitter(namespace):
     k8s_yaml(helm("apps/emitter/k8s", namespace=namespace, name="emitter"))
 
@@ -66,8 +54,21 @@ def mysql(namespace):
     k8s_yaml(helm("tilt/k8s/mysql", namespace=namespace, name="mysql"))
     k8s_resource("mysql", port_forwards=["3306"])
 
+def intake_db_workflows(namespace):
+    k8s_yaml(helm("apps/intake-db-workflows/k8s", namespace=namespace))
+
+    docker_build(
+        "localhost:5000/intake-db-workflows",
+        "apps/intake-db-workflows",
+        dockerfile="apps/intake-db-workflows/Dockerfile",
+    )
+
+    k8s_resource("intake-db-drop", trigger_mode=TRIGGER_MODE_MANUAL)
+    k8s_resource("intake-db-migrate", trigger_mode=TRIGGER_MODE_MANUAL, resource_deps=['intake-db-drop'])
+
 create_namespace(K8S_NAMESPACE)
 #intake(K8S_NAMESPACE, live_update=False)
 #emitter(K8S_NAMESPACE)
 #mysql(K8S_NAMESPACE)
 #intake_db_workflows(K8S_NAMESPACE)
+

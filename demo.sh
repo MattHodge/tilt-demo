@@ -3,8 +3,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-kubectx kind-kind
-kind delete cluster
+kubectx kind-kind || true
+kind delete cluster || true
 kind create cluster
 
 echo "Demo Ready"
